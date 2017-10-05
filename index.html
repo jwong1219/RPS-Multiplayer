@@ -13,8 +13,8 @@
     <div class="jumbotron">
       
     </div>
-    <div class="row"><!--Row for player name and submit button-->
-      <div class="col-sm-12 text-center">
+    <div class="row" id="name-row"><!--Row for player name and submit button-->
+      <div class="col-xs-12 text-center">
         <form>
           <div class="form-group">
             <input type="text" id="player-name-in" placeholder="Name">
@@ -24,23 +24,27 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-sm-4">
+      <div class="col-xs-4">
+        <h3><button class="btn btn-danger drop invisible" type="submit" id="player1-drop">Drop</button>
+        <span id="player1-name"></span></h3>
         <div id="player-1-box">
         </div>
       </div>
-      <div class="col-sm-4">
+      <div class="col-xs-4">
         <div id="alert-box" class="text-center">
           
         </div>
       </div>
-      <div class="col-sm-4">
+      <div class="col-xs-4">
+        <h3><button class="btn btn-danger drop invisible" type="submit" id="player2-drop">Drop</button>
+        <span id="player2-name"></span></h3>
         <div id="player-2-box">
           
         </div>
       </div>
     </div>
     <div class="row"><!--Row for Chat box-->
-      <div class="col-sm-8 col-sm-offset-2">
+      <div class="col-xs-8 col-xs-offset-2">
         <div id=
 
       </div>

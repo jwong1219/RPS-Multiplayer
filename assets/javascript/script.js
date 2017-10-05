@@ -22,7 +22,9 @@ $(window).on("load", function() {
 
   var p2Chosen;
   var gameLocked;
-  var player;
+  var player1;
+  var player2;
+  var playerName;
 
 
   database.ref("/gameData").on("value", function(snapshot) {
@@ -45,6 +47,8 @@ $(window).on("load", function() {
       //if player one is not selected, lock game, and prompt player one to join
       if (!p1Chosen) {
         $("#alert-box").text("Waiting for Player 1 to join.");
+        $("#name-submit").removeClass('invisible');
+        $("#player1-drop").addClass('invisible');
         database.ref("/gameData").update({
         gameLocked: true,
         });
@@ -52,10 +56,87 @@ $(window).on("load", function() {
       //if player two is not selected, lock game, and prompt player two to join
       else if (!p2Chosen) {
         $("#alert-box").text("Waiting for Player 2 to join.");
+        $("#name-submit").removeClass('invisible');
+        $("#player2-drop").addClass('invisible');
         database.ref("/gameData").update({
         gameLocked: true,
         });
       }
+    }
+  });
+
+  database.ref("/player1/name").on("value", function(snapshot) {
+    console.log(snapshot.val());
+    snapData = snapshot.val();
+    $("#player1-name").text(snapData);
+  });
+  database.ref("/player2/name").on("value", function(snapshot) {
+    console.log(snapshot.val());
+    snapData = snapshot.val();
+    $("#player2-name").text(snapData);
+  });
+
+  console.log({gameLocked, p1Chosen, p2Chosen});
+
+  $("#name-submit").on("click", function() {
+    event.preventDefault();
+    if (!p1Chosen) {
+      $("#name-submit").addClass('invisible');
+      playerName = $("#player-name-in").val();
+      console.log({playerName});
+      database.ref("/player1").update({
+        name: playerName,
+      });
+      $("#player-name-in").val("");
+      player1 = true;
+      player2 = false;
+      $("#player1-drop").removeClass("invisible");
+      console.log({player1, player2});
+      // $("#player1-name").text(playerName);
+      database.ref("/gameData").update({
+        p1Chosen: true,
+      });
+    }
+    else if (!p2Chosen) {
+      $("#name-submit").addClass('invisible');
+      playerName = $("#player-name-in").val();
+      console.log({playerName});
+      database.ref("/player2").update({
+        name: playerName,
+      });
+      $("#player-name-in").val("");
+      player1 = false;
+      player2 = true;
+      $("#player2-drop").removeClass('invisible');
+      console.log({player1, player2});
+      // $("#player2-name").text(playername);
+      database.ref("/gameData").update({
+        p2Chosen: true,
+      });
+    }
+  });
+
+  $(".drop").on("click", function() {
+    event.preventDefault();
+    var whichPlayer = $(this).attr('id');
+    console.log({whichPlayer});
+    if (whichPlayer === "player1-drop") {
+      player1 = false;
+      database.ref("/player1").update({
+        name: "Player 1",
+      });
+      database.ref("/gameData").update({
+        p1Chosen: false,
+      });
+    }
+    else if(whichPlayer === "player2-drop") {
+      player2 = false;
+      database.ref("/player2").update({
+        name: "Player 2",
+      });
+      database.ref("/gameData").update({
+        p2Chosen: false,
+      });
     }
   });
 
