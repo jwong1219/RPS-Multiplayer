@@ -276,7 +276,9 @@ $(window).on("load", function() {
       $("#alert-box").empty();
       $("#alert-box").append(player1ref.name + " chose " + p1choice + "!<br>");
       $("#alert-box").append(player2ref.name + " chose " + p2choice + "!<br>");
+       //evaluate choices
       if(p1choice === p2choice) {
+        $("#alert-box").append("Tie!<br>");
         console.log("tie!");
       }
       if(p1choice === "rock" && p2choice === "paper") {
@@ -334,13 +336,6 @@ $(window).on("load", function() {
       $(".choice").prop("disabled", false);
     }
   });
-
-
-    
-
-    //evaluate choices
-
-  //if both players are selected, any other person on the page can only spectate
 
 
 });
