@@ -259,38 +259,53 @@ $(window).on("load", function() {
     }
   });
 
-  database.ref("/choices").on("value", function(snapshot){
+  database.ref(/*"/choices"*/).on("value", function(snapshot){
     // console.log(snapshot.val());
-    var snap = snapshot.val();
+    var choiceSnap = snapshot.val().choices;
+    var player1ref = snapshot.val().player1;
+    var player2ref = snapshot.val().player2;
     // console.log(snap.player1, snap.player2)
-    if (snap.player1 && snap.player2) {
+    if (choiceSnap.player1 && choiceSnap.player2) {
       // console.log("both players have chosen");
-      var p1choice = snap.player1;
-      var p2choice = snap.player2;
+      var p1choice = choiceSnap.player1;
+      var p2choice = choiceSnap.player2;
+      database.ref("/choices").update({
+        player1: "",
+        player2: ""
+      });
+      $("#alert-box").empty();
+      $("#alert-box").append(player1ref.name + " chose " + p1choice + "!<br>");
+      $("#alert-box").append(player2ref.name + " chose " + p2choice + "!<br>");
       if(p1choice === p2choice) {
         console.log("tie!");
       }
       if(p1choice === "rock" && p2choice === "paper") {
+        $("#alert-box").append(player2ref.name + " wins!<br>");
         if(player1){losses++};
         if(player2){wins++};
       }
       if(p1choice === "rock" && p2choice === "scissors") {
+        $("#alert-box").append(player1ref.name + " wins!<br>");
         if(player2){losses++};
         if(player1){wins++};
       }
       if(p1choice === "paper" && p2choice === "scissors") {
+        $("#alert-box").append(player2ref.name + " wins!<br>");
         if(player1){losses++};
         if(player2){wins++};
       }
       if(p1choice === "paper" && p2choice === "rock") {
+        $("#alert-box").append(player1ref.name + " wins!<br>");
         if(player2){losses++};
         if(player1){wins++};
       }
       if(p1choice === "scissors" && p2choice === "rock") {
+        $("#alert-box").append(player2ref.name + " wins!<br>");
         if(player1){losses++};
         if(player2){wins++};
       }
       if(p1choice === "scissors" && p2choice === "paper") {
+        $("#alert-box").append(player1ref.name + " wins!<br>");
         if(player2){losses++};
         if(player1){wins++};
       }
@@ -307,15 +322,15 @@ $(window).on("load", function() {
           losses: losses,
         })
       }
-      database.ref("/choices").update({
-        player1: "",
-        player2: ""
-      });
+      // database.ref("/choices").update({
+      //   player1: "",
+      //   player2: ""
+      // });
     }
-    if (!snap.player1 && player1){
+    if (!choiceSnap.player1 && player1){
       $(".choice").prop("disabled", false);
     }
-    if (!snap.player2 && player2){
+    if (!choiceSnap.player2 && player2){
       $(".choice").prop("disabled", false);
     }
   });
