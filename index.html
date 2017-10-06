@@ -10,7 +10,7 @@
 </head>
 <body>
   <div class="container-fluid">
-    <div class="jumbotron">
+    <div class="jumbotron text-center">
       <h1>Rock Paper Scissors Duel!</h1>
     </div>
     <div class="row" id="name-row"><!--Row for player name and submit button-->
@@ -34,10 +34,14 @@
         <span id="player1-name"></span></h3>
         <div id="player-1-box">
         </div>
+        <div id="p1-score-box">
+          <h4>Wins: <span id="p1-wins"></span><br>
+          Losses: <span id="p1-losses"></span></h4>
+        </div>
         <div id="p1-button-box" class="invisible">
-          <button class="btn btn-primary choice" data-value="rock">Rock</button>
-          <button class="btn btn-primary choice" data-value="paper">Paper</button>
-          <button class="btn btn-primary choice" data-value="scissors">Scissors</button>
+          <button class="btn btn-default choice" data-value="rock">Rock</button>
+          <button class="btn btn-default choice" data-value="paper">Paper</button>
+          <button class="btn btn-default choice" data-value="scissors">Scissors</button>
         </div>
       </div>
       <div class="col-xs-4">
@@ -51,10 +55,14 @@
         <div id="player-2-box">
           
         </div>
+        <div id="p2-score-box">
+          <h4>Wins: <span id="p2-wins"></span><br>
+          Losses: <span id="p2-losses"></span></h4>
+        </div>
         <div id="p2-button-box" class="invisible">
-          <button class="btn btn-primary choice" data-value="rock">Rock</button>
-          <button class="btn btn-primary choice" data-value="paper">Paper</button>
-          <button class="btn btn-primary choice" data-value="scissors">Scissors</button>
+          <button class="btn btn-default choice" data-value="rock">Rock</button>
+          <button class="btn btn-default choice" data-value="paper">Paper</button>
+          <button class="btn btn-default choice" data-value="scissors">Scissors</button>
         </div>
       </div>
     </div>

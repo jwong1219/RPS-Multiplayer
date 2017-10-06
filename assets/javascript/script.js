@@ -29,7 +29,8 @@ $(window).on("load", function() {
   var spectator = true;
   var playerName;
   var playerConnect;
-
+  var wins = 0;
+  var losses = 0;
 
   database.ref("/gameData").on("value", function(snapshot) {
     console.log(snapshot.val());
@@ -60,6 +61,11 @@ $(window).on("load", function() {
         });
         database.ref("/player1").update({
         name: "Player 1",
+        wins: 0,
+        losses: 0,
+        });
+        database.ref("/choices").update({
+          player1: "",
         });
       }
       //if player two is not selected, lock game, and prompt player two to join
@@ -73,20 +79,29 @@ $(window).on("load", function() {
         });
         database.ref("/player2").update({
         name: "Player 2",
+        wins: 0,
+        losses: 0,
         });
+        database.ref("/choices").update({
+          player2: "",
+        })
       }
     }
   });
 
-  database.ref("/player1/name").on("value", function(snapshot) {
+  database.ref("/player1").on("value", function(snapshot) {
     console.log(snapshot.val());
     snapData = snapshot.val();
-    $("#player1-name").text(snapData);
+    $("#player1-name").text(snapData.name);
+    $("#p1-wins").text(snapData.wins);
+    $("#p1-losses").text(snapData.losses);
   });
-  database.ref("/player2/name").on("value", function(snapshot) {
+  database.ref("/player2").on("value", function(snapshot) {
     console.log(snapshot.val());
     snapData = snapshot.val();
-    $("#player2-name").text(snapData);
+    $("#player2-name").text(snapData.name);
+    $("#p2-wins").text(snapData.wins);
+    $("#p2-losses").text(snapData.losses);
   });
 
   connectedRef.on("value", function(connectSnap) {
@@ -165,6 +180,11 @@ $(window).on("load", function() {
       database.ref("/gameData").onDisconnect().update({
         p2Chosen: false,
       });
+      database.ref("/player2").onDisconnect().update({
+        name: "Player 2",
+        wins: 0,
+        losses: 0,
+      });
       $("#name-submit").addClass('invisible');
       $("#player-name-in").val("");
       $("#player2-drop").removeClass('invisible');
@@ -183,6 +203,8 @@ $(window).on("load", function() {
       spectator = true;
       database.ref("/player1").update({
         name: "Player 1",
+        wins: 0,
+        losses: 0,
       });
       database.ref("/gameData").update({
         p1Chosen: false,
@@ -193,6 +215,8 @@ $(window).on("load", function() {
       spectator = true;
       database.ref("/player2").update({
         name: "Player 2",
+        wins: 0,
+        losses: 0,
       });
       database.ref("/gameData").update({
         p2Chosen: false,
@@ -215,6 +239,84 @@ $(window).on("load", function() {
     else {
       $("#p1-button-box").addClass('invisible');
       $("#p2-button-box").addClass('invisible');
+    }
+  });
+
+  $(".choice").on("click", function() {
+    // console.log($(this).attr("data-value"));
+    var choice = $(this).attr("data-value");
+    $(".choice").prop("disabled", true);
+    // push player choice to firebase
+    if(player1) {
+      database.ref("/choices").update({
+        player1: choice,
+      });
+    }
+    else if(player2) {
+      database.ref("/choices").update({
+        player2: choice,
+      });
+    }
+  });
+
+  database.ref("/choices").on("value", function(snapshot){
+    // console.log(snapshot.val());
+    var snap = snapshot.val();
+    // console.log(snap.player1, snap.player2)
+    if (snap.player1 && snap.player2) {
+      // console.log("both players have chosen");
+      var p1choice = snap.player1;
+      var p2choice = snap.player2;
+      if(p1choice === p2choice) {
+        console.log("tie!");
+      }
+      if(p1choice === "rock" && p2choice === "paper") {
+        if(player1){losses++};
+        if(player2){wins++};
+      }
+      if(p1choice === "rock" && p2choice === "scissors") {
+        if(player2){losses++};
+        if(player1){wins++};
+      }
+      if(p1choice === "paper" && p2choice === "scissors") {
+        if(player1){losses++};
+        if(player2){wins++};
+      }
+      if(p1choice === "paper" && p2choice === "rock") {
+        if(player2){losses++};
+        if(player1){wins++};
+      }
+      if(p1choice === "scissors" && p2choice === "rock") {
+        if(player1){losses++};
+        if(player2){wins++};
+      }
+      if(p1choice === "scissors" && p2choice === "paper") {
+        if(player2){losses++};
+        if(player1){wins++};
+      }
+      console.log({player1, player2, wins, losses});
+      if(player1){
+        database.ref("/player1").update({
+          wins: wins,
+          losses: losses,
+        });
+      }
+      else if(player2){
+        database.ref("/player2").update({
+          wins: wins,
+          losses: losses,
+        })
+      }
+      database.ref("/choices").update({
+        player1: "",
+        player2: ""
+      });
+    }
+    if (!snap.player1 && player1){
+      $(".choice").prop("disabled", false);
+    }
+    if (!snap.player2 && player2){
+      $(".choice").prop("disabled", false);
     }
   });
 
