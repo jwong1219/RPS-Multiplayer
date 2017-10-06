@@ -13,6 +13,7 @@ var database = firebase.database();
 // Link to Firebase DB for tracking players/viewers
 var connectionsRef = database.ref("/connections");
 var connectedRef = database.ref(".info/connected");
+var playersRef = database.ref("/players");
 
 $(window).on("load", function() {
 
@@ -25,6 +26,7 @@ $(window).on("load", function() {
   var player1;
   var player2;
   var playerName;
+  var playerConnect;
 
 
   database.ref("/gameData").on("value", function(snapshot) {
@@ -33,6 +35,8 @@ $(window).on("load", function() {
     p1Chosen = snapshot.val().p1Chosen;
     p2Chosen = snapshot.val().p2Chosen;
     console.log({gameLocked, p1Chosen, p2Chosen})
+    if(player1) {$("#you-are-player").text("You are Player 1")};
+    if(player2) {$("#you-are-player").text("You are Player 2")};
     if (p1Chosen && p2Chosen) {
       $("#name-submit").addClass('invisible');
       $("#alert-box").empty();
@@ -45,21 +49,29 @@ $(window).on("load", function() {
       //   gameLocked: true,
       // });
       //if player one is not selected, lock game, and prompt player one to join
+      if (!player1 && !player2) {$("#name-submit").removeClass('invisible');}
       if (!p1Chosen) {
         $("#alert-box").text("Waiting for Player 1 to join.");
-        $("#name-submit").removeClass('invisible');
+        // if (!player1 || !player2) {$("#name-submit").removeClass('invisible');}
         $("#player1-drop").addClass('invisible');
         database.ref("/gameData").update({
         gameLocked: true,
+        });
+        database.ref("/player1").update({
+        name: "Player 1",
         });
       }
       //if player two is not selected, lock game, and prompt player two to join
       else if (!p2Chosen) {
         $("#alert-box").text("Waiting for Player 2 to join.");
-        $("#name-submit").removeClass('invisible');
+        // $("#name-submit").removeClass('invisible');
         $("#player2-drop").addClass('invisible');
+        console.log("Player2-drop invisible");
         database.ref("/gameData").update({
         gameLocked: true,
+        });
+        database.ref("/player2").update({
+        name: "Player 2",
         });
       }
     }
@@ -76,43 +88,86 @@ $(window).on("load", function() {
     $("#player2-name").text(snapData);
   });
 
+  connectedRef.on("value", function(connectSnap) {
+    console.log(connectSnap.val());
+    if (connectSnap.val()) {
+      var connectionsList = connectionsRef.push({
+        connected: true
+      });
+      playerConnect = connectionsList;
+      console.log({playerConnect});
+      $("#alertbox-2").append("Line 90: playerConnect: " + playerConnect);
+      // console.log(connectionsList.val());
+      // console.log(connectedRef.val());
+      connectionsList.onDisconnect().remove();
+    }
+    // $("#alert-box2").text("Player 1 is " + player1);
+    // if (player1) {
+    //   database.ref("/player1").onDisconnect().set({
+    //     choice: "",
+    //     name: "Player 1",
+    //   });
+    //   database.ref("/gameData").onDisconnect().update({
+    //     p1Chosen: false,
+    //   })
+    // }
+    // else if (player2) {
+    //   database.ref("/player2").onDisconnect().set({
+    //     choice: "",
+    //     name: "Player 2",
+    //   });
+    //   database.ref("/gameData").onDisconnect().update({
+    //     p2Chosen: false,
+    //   })
+    // }
+
+  });
+
   console.log({gameLocked, p1Chosen, p2Chosen});
 
   $("#name-submit").on("click", function() {
     event.preventDefault();
     if (!p1Chosen) {
-      $("#name-submit").addClass('invisible');
+      player1 = true;
+      player2 = false;
       playerName = $("#player-name-in").val();
       console.log({playerName});
       database.ref("/player1").update({
         name: playerName,
       });
-      $("#player-name-in").val("");
-      player1 = true;
-      player2 = false;
-      $("#player1-drop").removeClass("invisible");
-      console.log({player1, player2});
-      // $("#player1-name").text(playerName);
       database.ref("/gameData").update({
         p1Chosen: true,
       });
+      database.ref("/gameData").onDisconnect().update({
+        p1Chosen: false,
+      });
+      $("#name-submit").addClass('invisible');
+      $("#player-name-in").val("");
+      $("#player1-drop").removeClass("invisible");
+      console.log({player1, player2});
+      // $("#player1-name").text(playerName);
+      
     }
     else if (!p2Chosen) {
-      $("#name-submit").addClass('invisible');
+      player1 = false;
+      player2 = true;
       playerName = $("#player-name-in").val();
       console.log({playerName});
       database.ref("/player2").update({
         name: playerName,
       });
-      $("#player-name-in").val("");
-      player1 = false;
-      player2 = true;
-      $("#player2-drop").removeClass('invisible');
-      console.log({player1, player2});
-      // $("#player2-name").text(playername);
       database.ref("/gameData").update({
         p2Chosen: true,
       });
+      database.ref("/gameData").onDisconnect().update({
+        p2Chosen: false,
+      });
+      $("#name-submit").addClass('invisible');
+      $("#player-name-in").val("");
+      $("#player2-drop").removeClass('invisible');
+      console.log({player1, player2});
+      // $("#player2-name").text(playername);
+      
     }
   });
 
