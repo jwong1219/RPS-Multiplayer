@@ -25,6 +25,8 @@ $(window).on("load", function() {
   var gameLocked;
   var player1;
   var player2;
+  //if both players are selected, any other person on the page can only spectate
+  var spectator = true;
   var playerName;
   var playerConnect;
 
@@ -37,17 +39,16 @@ $(window).on("load", function() {
     console.log({gameLocked, p1Chosen, p2Chosen})
     if(player1) {$("#you-are-player").text("You are Player 1")};
     if(player2) {$("#you-are-player").text("You are Player 2")};
+    if(spectator) {$("#you-are-player").text("You are spectating")};
     if (p1Chosen && p2Chosen) {
       $("#name-submit").addClass('invisible');
       $("#alert-box").empty();
+      //if both players are selected, game is unlocked and can be run
       database.ref("/gameData").update({
         gameLocked: false,
       });
     }
     else {
-      // database.ref("/gameData").update({
-      //   gameLocked: true,
-      // });
       //if player one is not selected, lock game, and prompt player one to join
       if (!player1 && !player2) {$("#name-submit").removeClass('invisible');}
       if (!p1Chosen) {
@@ -130,6 +131,7 @@ $(window).on("load", function() {
     if (!p1Chosen) {
       player1 = true;
       player2 = false;
+      spectator = false;
       playerName = $("#player-name-in").val();
       console.log({playerName});
       database.ref("/player1").update({
@@ -151,6 +153,7 @@ $(window).on("load", function() {
     else if (!p2Chosen) {
       player1 = false;
       player2 = true;
+      spectator = false;
       playerName = $("#player-name-in").val();
       console.log({playerName});
       database.ref("/player2").update({
@@ -177,6 +180,7 @@ $(window).on("load", function() {
     console.log({whichPlayer});
     if (whichPlayer === "player1-drop") {
       player1 = false;
+      spectator = true;
       database.ref("/player1").update({
         name: "Player 1",
       });
@@ -186,6 +190,7 @@ $(window).on("load", function() {
     }
     else if(whichPlayer === "player2-drop") {
       player2 = false;
+      spectator = true;
       database.ref("/player2").update({
         name: "Player 2",
       });
@@ -195,28 +200,30 @@ $(window).on("load", function() {
     }
   });
 
+  database.ref("/gameData/gameLocked").on("value", function(snapshot) {
+    console.log("gameLocked is " + snapshot.val());
+    //if the game becomes unlocked, make the RPS buttons visible to both players
+    if (!snapshot.val()) {
+      if(player1) {
+        $("#p1-button-box").removeClass('invisible');
+      }
+      else if(player2) {
+        $("#p2-button-box").removeClass('invisible');
+      }
+    }
+    //if the game becomes locked for any reason, hide the rps buttons
+    else {
+      $("#p1-button-box").addClass('invisible');
+      $("#p2-button-box").addClass('invisible');
+    }
+  });
 
-  //if player one is not selected, lock game, and prompt player one to join
 
-
-  //if player two is not selected, lock game, and prompt player two to join
-
-
-  //if both players are selected, game is unlocked and can be run
-
-    //make the RPS buttons visible to player one and tell player one to make a selection. Display message to player 2 "waiting for Player 1"  
-
-
-    //Player one makes a choice, the choice is stored. Hide the RPS buttons from player 1
-
-
-    //make the RPS buttons visible to player 2 and tell player one to make a selection. Display message to player 1 "waiting for Player 2"  
-
-
-    //player 2 makes a choice, the choice is stored. Hide the RPS buttons from player 1
+    
 
     //evaluate choices
 
   //if both players are selected, any other person on the page can only spectate
+
 
 });

@@ -11,14 +11,14 @@
 <body>
   <div class="container-fluid">
     <div class="jumbotron">
-      
+      <h1>Rock Paper Scissors Duel!</h1>
     </div>
     <div class="row" id="name-row"><!--Row for player name and submit button-->
       <div class="col-xs-12 text-center">
         <form>
           <div class="form-group">
             <input type="text" id="player-name-in" placeholder="Name">
-            <button class="btn btn-primary" type="submit" id="name-submit">Submit</button> 
+            <button class="btn btn-primary" type="submit" id="name-submit">Join!</button> 
           </div>
         </form>
       </div>
@@ -34,6 +34,11 @@
         <span id="player1-name"></span></h3>
         <div id="player-1-box">
         </div>
+        <div id="p1-button-box" class="invisible">
+          <button class="btn btn-primary choice" data-value="rock">Rock</button>
+          <button class="btn btn-primary choice" data-value="paper">Paper</button>
+          <button class="btn btn-primary choice" data-value="scissors">Scissors</button>
+        </div>
       </div>
       <div class="col-xs-4">
         <div id="alert-box" class="text-center">
@@ -45,6 +50,11 @@
         <span id="player2-name"></span></h3>
         <div id="player-2-box">
           
+        </div>
+        <div id="p2-button-box" class="invisible">
+          <button class="btn btn-primary choice" data-value="rock">Rock</button>
+          <button class="btn btn-primary choice" data-value="paper">Paper</button>
+          <button class="btn btn-primary choice" data-value="scissors">Scissors</button>
         </div>
       </div>
     </div>
